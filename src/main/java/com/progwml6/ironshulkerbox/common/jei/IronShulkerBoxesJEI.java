@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 @JeiPlugin
 public class IronShulkerBoxesJEI implements IModPlugin {
 
-  private static final ResourceLocation ID = new ResourceLocation(IronShulkerBoxes.MOD_ID, "jei_plugin");
+  private static final ResourceLocation ID = new ResourceLocation(IronShulkerBoxes.MODID, "jei_plugin");
 
   @Override
   public ResourceLocation getPluginUid() {

@@ -2,41 +2,32 @@ package com.progwml6.ironshulkerbox.common.item;
 
 import com.progwml6.ironshulkerbox.common.block.IronShulkerBoxesTypes;
 import com.progwml6.ironshulkerbox.common.registraton.IronShulkerBoxesBlockEntityTypes;
-import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.function.Supplier;
 
-public class IronShulkerBoxItemStackInvWrapper implements IItemHandlerModifiable, ICapabilityProvider {
+public class IronShulkerBoxItemStackInvWrapper implements IItemHandlerModifiable {
 
   private final ItemStack stack;
-  private final Supplier<IronShulkerBoxesTypes> type;
-  private final LazyOptional<IItemHandler> holder = LazyOptional.of(() -> this);
+  private final IronShulkerBoxesTypes type;
 
   private CompoundTag cachedTag;
   private NonNullList<ItemStack> itemStacksCache;
 
-  public IronShulkerBoxItemStackInvWrapper(ItemStack stack, Supplier<IronShulkerBoxesTypes> type) {
+  public IronShulkerBoxItemStackInvWrapper(ItemStack stack, IronShulkerBoxesTypes type) {
     this.stack = stack;
     this.type = type;
   }
 
   @Override
   public int getSlots() {
-    return this.type.get().size;
+    return this.type.size;
   }
 
   @Override
@@ -48,7 +39,7 @@ public class IronShulkerBoxItemStackInvWrapper implements IItemHandlerModifiable
 
   @Override
   @Nonnull
-  public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+  public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
     if (stack.isEmpty())
       return ItemStack.EMPTY;
 
@@ -91,7 +82,6 @@ public class IronShulkerBoxItemStackInvWrapper implements IItemHandlerModifiable
   @Nonnull
   public ItemStack extractItem(int slot, int amount, boolean simulate) {
     NonNullList<ItemStack> itemStacks = getItemList();
-
     if (amount == 0)
       return ItemStack.EMPTY;
 
@@ -138,37 +128,27 @@ public class IronShulkerBoxItemStackInvWrapper implements IItemHandlerModifiable
   }
 
   @Override
-  public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
+  public void setStackInSlot(int slot, ItemStack stack) {
     validateSlotIndex(slot);
-
-    if (!isItemValid(slot, stack))
-      throw new RuntimeException("Invalid stack " + stack + " for slot " + slot + ")");
-
+    if (!isItemValid(slot, stack)) throw new RuntimeException("Invalid stack " + stack + " for slot " + slot + ")");
     NonNullList<ItemStack> itemStacks = getItemList();
-
     itemStacks.set(slot, stack);
-
     setItemList(itemStacks);
   }
 
   private NonNullList<ItemStack> getItemList() {
     CompoundTag rootTag = BlockItem.getBlockEntityData(this.stack);
-
     if (cachedTag == null || !cachedTag.equals(rootTag))
       itemStacksCache = refreshItemList(rootTag);
-
     return itemStacksCache;
   }
 
   private NonNullList<ItemStack> refreshItemList(CompoundTag rootTag) {
     NonNullList<ItemStack> itemStacks = NonNullList.withSize(getSlots(), ItemStack.EMPTY);
-
     if (rootTag != null && rootTag.contains("Items", CompoundTag.TAG_LIST)) {
       ContainerHelper.loadAllItems(rootTag, itemStacks);
     }
-
     cachedTag = rootTag;
-
     return itemStacks;
   }
 
@@ -176,7 +156,7 @@ public class IronShulkerBoxItemStackInvWrapper implements IItemHandlerModifiable
     CompoundTag existing = BlockItem.getBlockEntityData(this.stack);
     CompoundTag rootTag = ContainerHelper.saveAllItems(existing == null ? new CompoundTag() : existing, itemStacks);
 
-    switch (this.type.get()) {
+    switch (this.type) {
       case IRON -> BlockItem.setBlockEntityData(this.stack, IronShulkerBoxesBlockEntityTypes.IRON_SHULKER_BOX.get(), rootTag);
       case GOLD -> BlockItem.setBlockEntityData(this.stack, IronShulkerBoxesBlockEntityTypes.GOLD_SHULKER_BOX.get(), rootTag);
       case DIAMOND -> BlockItem.setBlockEntityData(this.stack, IronShulkerBoxesBlockEntityTypes.DIAMOND_SHULKER_BOX.get(), rootTag);
@@ -186,11 +166,5 @@ public class IronShulkerBoxItemStackInvWrapper implements IItemHandlerModifiable
     }
 
     cachedTag = rootTag;
-  }
-
-  @Override
-  @Nonnull
-  public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-    return ForgeCapabilities.ITEM_HANDLER.orEmpty(cap, this.holder);
   }
 }

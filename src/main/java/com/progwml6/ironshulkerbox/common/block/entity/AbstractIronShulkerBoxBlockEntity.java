@@ -258,11 +258,6 @@ public abstract class AbstractIronShulkerBoxBlockEntity extends RandomizableCont
     return this.animationStatus == AbstractIronShulkerBoxBlockEntity.AnimationStatus.CLOSED;
   }
 
-  @Override
-  protected net.minecraftforge.items.IItemHandler createUnSidedHandler() {
-    return new net.minecraftforge.items.wrapper.SidedInvWrapper(this, Direction.UP);
-  }
-
   public IronShulkerBoxesTypes getShulkerBoxType() {
     IronShulkerBoxesTypes type = IronShulkerBoxesTypes.IRON;
 

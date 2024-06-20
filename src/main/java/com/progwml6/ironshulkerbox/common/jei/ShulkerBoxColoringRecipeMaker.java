@@ -47,7 +47,7 @@ public final class ShulkerBoxColoringRecipeMaker {
 
           NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.EMPTY, baseShulkerIngredient, colorIngredient);
           ItemStack output = AbstractIronShulkerBoxBlock.getColoredItemStack(color, AbstractIronShulkerBoxBlock.getTypeFromItem(baseShulkerStack.getItem()));
-          ResourceLocation id = new ResourceLocation(IronShulkerBoxes.MOD_ID, group + "." + output.getDescriptionId());
+          ResourceLocation id = new ResourceLocation(IronShulkerBoxes.MODID, group + "." + output.getDescriptionId());
           CraftingRecipe recipe = new ShapelessRecipe(group, CraftingBookCategory.MISC, output, inputs);
           return new RecipeHolder<>(id, recipe);
         })

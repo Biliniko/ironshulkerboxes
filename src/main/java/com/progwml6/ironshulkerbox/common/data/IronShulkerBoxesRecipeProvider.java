@@ -5,23 +5,23 @@ import com.progwml6.ironshulkerbox.common.item.IronShulkerBoxesUpgradeType;
 import com.progwml6.ironshulkerbox.common.recipes.IronShulkerBoxesColoringRecipe;
 import com.progwml6.ironshulkerbox.common.registraton.IronShulkerBoxesBlocks;
 import com.progwml6.ironshulkerbox.common.registraton.IronShulkerBoxesItems;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.SpecialRecipeBuilder;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.conditions.IConditionBuilder;
 
 import java.util.Locale;
-import java.util.Objects;
 
 public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IConditionBuilder {
 
@@ -136,12 +136,14 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
   }
 
   protected static ResourceLocation prefix(ItemLike item, String prefix) {
-    ResourceLocation loc = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item.asItem()));
-    return location(prefix + loc.getPath());
+    ResourceLocation registryName = BuiltInRegistries.ITEM.getResourceKey(item.asItem())
+      .map(ResourceKey::location)
+      .orElseThrow(() -> new IllegalStateException("Could not retrieve registry name for output."));
+    return location(prefix + registryName.getPath());
   }
 
   private static ResourceLocation location(String id) {
-    return new ResourceLocation(IronShulkerBoxes.MOD_ID, id);
+    return new ResourceLocation(IronShulkerBoxes.MODID, id);
   }
 
   private void registerCopperBoxRecipe(RecipeOutput recipeOutput, ItemLike result, ItemLike input, String color, String group) {

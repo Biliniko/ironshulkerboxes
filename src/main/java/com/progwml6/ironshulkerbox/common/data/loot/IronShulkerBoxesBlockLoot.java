@@ -5,6 +5,7 @@ import com.progwml6.ironshulkerbox.common.block.AbstractIronShulkerBoxBlock;
 import com.progwml6.ironshulkerbox.common.block.entity.AbstractIronShulkerBoxBlockEntity;
 import com.progwml6.ironshulkerbox.common.registraton.IronShulkerBoxesBlockEntityTypes;
 import com.progwml6.ironshulkerbox.common.registraton.IronShulkerBoxesBlocks;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.DyeColor;
@@ -21,7 +22,7 @@ import net.minecraft.world.level.storage.loot.functions.CopyNbtFunction;
 import net.minecraft.world.level.storage.loot.functions.SetContainerContents;
 import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 public class IronShulkerBoxesBlockLoot extends BlockLootSubProvider {
 
   private static final Set<Item> EXPLOSION_RESISTANT = getExplosionResistance().stream().map(ItemLike::asItem).collect(Collectors.toSet());
+  private final Set<Block> knownBlocks = new ReferenceOpenHashSet<>();
 
   public IronShulkerBoxesBlockLoot() {
     super(EXPLOSION_RESISTANT, FeatureFlags.REGISTRY.allFlags());
@@ -54,11 +56,15 @@ public class IronShulkerBoxesBlockLoot extends BlockLootSubProvider {
   }
 
   @Override
+  protected void add(@NotNull Block block, @NotNull LootTable.Builder table) {
+    //Overwrite the core register method to add to our list of known blocks
+    super.add(block, table);
+    knownBlocks.add(block);
+  }
+
+  @Override
   protected Iterable<Block> getKnownBlocks() {
-    return IronShulkerBoxesBlocks.BLOCKS.getEntries() // Get all registered entries
-      .stream() // Stream the wrapped objects
-      .flatMap(RegistryObject::stream) // Get the object if available
-      ::iterator; // Create the iterable
+    return knownBlocks;
   }
 
   protected LootTable.Builder createShulkerBoxDrop(Block pBlock, BlockEntityType<? extends AbstractIronShulkerBoxBlockEntity> blockEntityType) {

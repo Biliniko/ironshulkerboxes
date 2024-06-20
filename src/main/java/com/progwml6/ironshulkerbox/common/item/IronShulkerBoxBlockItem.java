@@ -12,35 +12,25 @@ import com.progwml6.ironshulkerbox.common.block.entity.ObsidianShulkerBoxBlockEn
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fml.DistExecutor;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
-import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class IronShulkerBoxBlockItem extends BlockItem {
 
-  protected Supplier<IronShulkerBoxesTypes> type;
-  protected Supplier<DyeColor> color;
+  protected IronShulkerBoxesTypes type;
+  protected DyeColor color;
 
-  public IronShulkerBoxBlockItem(Block block, Properties properties, Supplier<Callable<IronShulkerBoxesTypes>> type, Supplier<Callable<DyeColor>> color) {
+  public IronShulkerBoxBlockItem(Block block, Properties properties, IronShulkerBoxesTypes type, DyeColor color) {
     super(block, properties);
 
-    IronShulkerBoxesTypes tempType = DistExecutor.unsafeCallWhenOn(Dist.CLIENT, type);
-    DyeColor tempColor = DistExecutor.unsafeCallWhenOn(Dist.CLIENT, color);
-
-    this.type = tempType == null ? null : () -> tempType;
-    this.color = tempColor == null ? null : () -> tempColor;
+    this.type = type;
+    this.color = color;
   }
 
   @Override
@@ -55,18 +45,18 @@ public class IronShulkerBoxBlockItem extends BlockItem {
         DyeColor dyeColor;
 
         if (color != null) {
-          dyeColor = color.get();
+          dyeColor = color;
         } else {
           dyeColor = null;
         }
 
-        switch (type.get()) {
-          case GOLD -> modelToUse = () -> new GoldShulkerBoxBlockEntity(BlockPos.ZERO, IronShulkerBoxesTypes.get(type.get(), dyeColor).defaultBlockState());
-          case DIAMOND -> modelToUse = () -> new DiamondShulkerBoxBlockEntity(BlockPos.ZERO, IronShulkerBoxesTypes.get(type.get(), dyeColor).defaultBlockState());
-          case COPPER -> modelToUse = () -> new CopperShulkerBoxBlockEntity(BlockPos.ZERO, IronShulkerBoxesTypes.get(type.get(), dyeColor).defaultBlockState());
-          case CRYSTAL -> modelToUse = () -> new CrystalShulkerBoxBlockEntity(BlockPos.ZERO, IronShulkerBoxesTypes.get(type.get(), dyeColor).defaultBlockState());
-          case OBSIDIAN -> modelToUse = () -> new ObsidianShulkerBoxBlockEntity(BlockPos.ZERO, IronShulkerBoxesTypes.get(type.get(), dyeColor).defaultBlockState());
-          default -> modelToUse = () -> new IronShulkerBoxBlockEntity(BlockPos.ZERO, IronShulkerBoxesTypes.get(type.get(), dyeColor).defaultBlockState());
+        switch (type) {
+          case GOLD -> modelToUse = () -> new GoldShulkerBoxBlockEntity(BlockPos.ZERO, IronShulkerBoxesTypes.get(type, dyeColor).defaultBlockState());
+          case DIAMOND -> modelToUse = () -> new DiamondShulkerBoxBlockEntity(BlockPos.ZERO, IronShulkerBoxesTypes.get(type, dyeColor).defaultBlockState());
+          case COPPER -> modelToUse = () -> new CopperShulkerBoxBlockEntity(BlockPos.ZERO, IronShulkerBoxesTypes.get(type, dyeColor).defaultBlockState());
+          case CRYSTAL -> modelToUse = () -> new CrystalShulkerBoxBlockEntity(BlockPos.ZERO, IronShulkerBoxesTypes.get(type, dyeColor).defaultBlockState());
+          case OBSIDIAN -> modelToUse = () -> new ObsidianShulkerBoxBlockEntity(BlockPos.ZERO, IronShulkerBoxesTypes.get(type, dyeColor).defaultBlockState());
+          default -> modelToUse = () -> new IronShulkerBoxBlockEntity(BlockPos.ZERO, IronShulkerBoxesTypes.get(type, dyeColor).defaultBlockState());
         }
 
         return new IronShulkerBoxItemStackRenderer<>(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels(), modelToUse);
@@ -77,10 +67,5 @@ public class IronShulkerBoxBlockItem extends BlockItem {
   @Override
   public boolean canFitInsideContainerItems() {
     return !(this.getBlock() instanceof AbstractIronShulkerBoxBlock);
-  }
-
-  @Override
-  public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-    return new IronShulkerBoxItemStackInvWrapper(stack, type);
   }
 }

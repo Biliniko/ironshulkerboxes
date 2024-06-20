@@ -7,13 +7,13 @@ import com.progwml6.ironshulkerbox.common.registraton.IronShulkerBoxesBlocks;
 import com.progwml6.ironshulkerbox.common.registraton.IronShulkerBoxesItems;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.DyeColor;
-import net.minecraftforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.common.data.LanguageProvider;
 import org.apache.commons.lang3.text.WordUtils;
 
 public class IronShulkerBoxesLanguageProvider extends LanguageProvider {
 
   public IronShulkerBoxesLanguageProvider(PackOutput output, String locale) {
-    super(output, IronShulkerBoxes.MOD_ID, locale);
+    super(output, IronShulkerBoxes.MODID, locale);
   }
 
   @Override

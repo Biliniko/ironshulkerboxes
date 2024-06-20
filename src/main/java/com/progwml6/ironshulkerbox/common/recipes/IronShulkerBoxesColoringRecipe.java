@@ -12,6 +12,7 @@ import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.common.Tags;
 
 public class IronShulkerBoxesColoringRecipe extends CustomRecipe {
 
@@ -32,7 +33,7 @@ public class IronShulkerBoxesColoringRecipe extends CustomRecipe {
         if (Block.byItem(itemstack.getItem()) instanceof AbstractIronShulkerBoxBlock) {
           ++i;
         } else {
-          if (!itemstack.is(net.minecraftforge.common.Tags.Items.DYES)) {
+          if (!itemstack.is(Tags.Items.DYES)) {
             return false;
           }
 
