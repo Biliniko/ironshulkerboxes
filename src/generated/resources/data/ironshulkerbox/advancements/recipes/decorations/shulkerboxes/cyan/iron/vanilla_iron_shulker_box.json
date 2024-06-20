@@ -28,6 +28,5 @@
     "recipes": [
       "ironshulkerbox:shulkerboxes/cyan/iron/vanilla_iron_shulker_box"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

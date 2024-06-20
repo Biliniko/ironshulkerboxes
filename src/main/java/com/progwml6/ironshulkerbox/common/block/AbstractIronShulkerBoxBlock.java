@@ -30,6 +30,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DirectionalBlock;
@@ -58,12 +59,12 @@ import java.util.function.Supplier;
 
 public abstract class AbstractIronShulkerBoxBlock extends BaseEntityBlock {
 
-  private static final VoxelShape UP_OPEN_AABB = Block.box(0.0D, 15.0D, 0.0D, 16.0D, 16.0D, 16.0D);
-  private static final VoxelShape DOWN_OPEN_AABB = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 1.0D, 16.0D);
-  private static final VoxelShape WES_OPEN_AABB = Block.box(0.0D, 0.0D, 0.0D, 1.0D, 16.0D, 16.0D);
-  private static final VoxelShape EAST_OPEN_AABB = Block.box(15.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
-  private static final VoxelShape NORTH_OPEN_AABB = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 1.0D);
-  private static final VoxelShape SOUTH_OPEN_AABB = Block.box(0.0D, 0.0D, 15.0D, 16.0D, 16.0D, 16.0D);
+  private static final VoxelShape UP_OPEN_AABB = Block.box(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
+  private static final VoxelShape DOWN_OPEN_AABB = Block.box(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
+  private static final VoxelShape WES_OPEN_AABB = Block.box(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
+  private static final VoxelShape EAST_OPEN_AABB = Block.box(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+  private static final VoxelShape NORTH_OPEN_AABB = Block.box(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
+  private static final VoxelShape SOUTH_OPEN_AABB = Block.box(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
   private static final Map<Direction, VoxelShape> OPEN_SHAPE_BY_DIRECTION = Util.make(Maps.newEnumMap(Direction.class), (p_258974_) -> {
     p_258974_.put(Direction.NORTH, NORTH_OPEN_AABB);
     p_258974_.put(Direction.EAST, EAST_OPEN_AABB);
@@ -161,7 +162,7 @@ public abstract class AbstractIronShulkerBoxBlock extends BaseEntityBlock {
    * this block
    */
   @Override
-  public void playerWillDestroy(Level pLevel, BlockPos pPos, BlockState pState, Player pPlayer) {
+  public BlockState playerWillDestroy(Level pLevel, BlockPos pPos, BlockState pState, Player pPlayer) {
     BlockEntity blockentity = pLevel.getBlockEntity(pPos);
 
     if (blockentity instanceof AbstractIronShulkerBoxBlockEntity ironShulkerBoxBlockEntity) {
@@ -180,7 +181,7 @@ public abstract class AbstractIronShulkerBoxBlock extends BaseEntityBlock {
       }
     }
 
-    super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
+    return super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
   }
 
   @Override
@@ -301,7 +302,7 @@ public abstract class AbstractIronShulkerBoxBlock extends BaseEntityBlock {
   }
 
   @Override
-  public ItemStack getCloneItemStack(BlockGetter pLevel, BlockPos pPos, BlockState pState) {
+  public ItemStack getCloneItemStack(LevelReader pLevel, BlockPos pPos, BlockState pState) {
     ItemStack itemstack = super.getCloneItemStack(pLevel, pPos, pState);
 
     pLevel.getBlockEntity(pPos, this.blockEntityType()).ifPresent(shulkerBoxBlockEntity -> shulkerBoxBlockEntity.saveToItem(itemstack));

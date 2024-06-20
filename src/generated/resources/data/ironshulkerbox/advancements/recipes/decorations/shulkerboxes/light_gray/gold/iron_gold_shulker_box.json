@@ -28,6 +28,5 @@
     "recipes": [
       "ironshulkerbox:shulkerboxes/light_gray/gold/iron_gold_shulker_box"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

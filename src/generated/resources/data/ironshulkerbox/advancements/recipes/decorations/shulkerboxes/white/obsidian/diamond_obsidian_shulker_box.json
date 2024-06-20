@@ -30,6 +30,5 @@
     "recipes": [
       "ironshulkerbox:shulkerboxes/white/obsidian/diamond_obsidian_shulker_box"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

@@ -28,6 +28,5 @@
     "recipes": [
       "ironshulkerbox:shulkerboxes/purple/crystal/diamond_crystal_shulker_box"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

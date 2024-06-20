@@ -8,11 +8,17 @@ Please note these Shulker Boxes used to be part of Iron Chests.
 For issues with the chests, Please report them to [Iron Chests](https://github.com/progwml6/ironchest)
 
 ## Setting up a Workspace/Compiling from Source
+
 Note: Git MUST be installed and in the system path to use our scripts.
-* Setup: Run [gradle]in the repository root: `gradlew[.bat] [eclipse] OR import build.gradle into idea`
-* Build: Run [gradle]in the repository root: `gradlew[.bat] build`
-* If obscure Gradle issues are found try running `gradlew clean` and `gradlew cleanCache`
 
+Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+
+> **Note**: For Eclipse, use tasks in `Launch Group` instead of ones founds in `Java Application`. A preparation task must run before launching the game. NeoGradle uses launch groups to do these subsequently.
+
+If at any point you are missing libraries in your IDE, or you've run into problems you can
+run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything
+{this does not affect your code} and then start the process again.
+
+Discord:
+==========
 [![Discord](https://img.shields.io/discord/102860784329052160.svg?style=for-the-badge)](https://discord.gg/njGrvuh)
-
-If you have queries about any license or the other restrictions, please drop by our IRC channel, #progsmods on irc.esper.net

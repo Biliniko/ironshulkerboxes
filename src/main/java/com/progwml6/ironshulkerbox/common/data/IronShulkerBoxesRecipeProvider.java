@@ -2,9 +2,9 @@ package com.progwml6.ironshulkerbox.common.data;
 
 import com.progwml6.ironshulkerbox.IronShulkerBoxes;
 import com.progwml6.ironshulkerbox.common.item.IronShulkerBoxesUpgradeType;
+import com.progwml6.ironshulkerbox.common.recipes.IronShulkerBoxesColoringRecipe;
 import com.progwml6.ironshulkerbox.common.registraton.IronShulkerBoxesBlocks;
 import com.progwml6.ironshulkerbox.common.registraton.IronShulkerBoxesItems;
-import com.progwml6.ironshulkerbox.common.registraton.IronShulkerBoxesRecipes;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -36,7 +36,7 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
 
     this.addUpgradesRecipes(recipeOutput);
 
-    SpecialRecipeBuilder.special(IronShulkerBoxesRecipes.SHULKER_BOX_COLORING.get()).save(recipeOutput, location("shulker_box_coloring").toString());
+    SpecialRecipeBuilder.special(IronShulkerBoxesColoringRecipe::new).save(recipeOutput, location("shulker_box_coloring").toString());
   }
 
   private void addDefaultShulkerBoxRecipes(RecipeOutput recipeOutput) {
