@@ -4,6 +4,7 @@ import com.progwml6.ironshulkerbox.common.block.AbstractIronShulkerBoxBlock;
 import com.progwml6.ironshulkerbox.common.block.IronShulkerBoxesTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -99,13 +100,13 @@ public abstract class AbstractIronShulkerBoxBlockEntity extends RandomizableCont
   }
 
   public AABB getBoundingBox(BlockState pState) {
-    return Shulker.getProgressAabb(pState.getValue(AbstractIronShulkerBoxBlock.FACING), 0.5F * this.getProgress(1.0F));
+    return Shulker.getProgressAabb(1.0F, pState.getValue(ShulkerBoxBlock.FACING), 0.5F * this.getProgress(1.0F));
   }
 
   private void moveCollidedEntities(Level pLevel, BlockPos pPos, BlockState pState) {
     if (pState.getBlock() instanceof AbstractIronShulkerBoxBlock) {
       Direction direction = pState.getValue(AbstractIronShulkerBoxBlock.FACING);
-      AABB aabb = Shulker.getProgressDeltaAabb(direction, this.progressOld, this.progress).move(pPos);
+      AABB aabb = Shulker.getProgressDeltaAabb(1.0F, direction, this.progressOld, this.progress).move(pPos);
       List<Entity> list = pLevel.getEntities(null, aabb);
 
       if (!list.isEmpty()) {
@@ -132,12 +133,10 @@ public abstract class AbstractIronShulkerBoxBlockEntity extends RandomizableCont
       this.openCount = pType;
       if (pType == 0) {
         this.animationStatus = AbstractIronShulkerBoxBlockEntity.AnimationStatus.CLOSING;
-        doNeighborUpdates(this.getLevel(), this.worldPosition, this.getBlockState());
       }
 
       if (pType == 1) {
         this.animationStatus = AbstractIronShulkerBoxBlockEntity.AnimationStatus.OPENING;
-        doNeighborUpdates(this.getLevel(), this.worldPosition, this.getBlockState());
       }
 
       return true;
@@ -148,6 +147,7 @@ public abstract class AbstractIronShulkerBoxBlockEntity extends RandomizableCont
 
   private static void doNeighborUpdates(Level pLevel, BlockPos pPos, BlockState pState) {
     pState.updateNeighbourShapes(pLevel, pPos, 3);
+    pLevel.updateNeighborsAt(pPos, pState.getBlock());
   }
 
   @Override
@@ -186,25 +186,23 @@ public abstract class AbstractIronShulkerBoxBlockEntity extends RandomizableCont
   }
 
   @Override
-  public void load(CompoundTag pTag) {
-    super.load(pTag);
-    this.loadFromTag(pTag);
+  protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
+    super.loadAdditional(pTag, pRegistries);
+    this.loadFromTag(pTag, pRegistries);
   }
 
   @Override
-  protected void saveAdditional(CompoundTag pTag) {
-    super.saveAdditional(pTag);
-
+  protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
+    super.saveAdditional(pTag, pRegistries);
     if (!this.trySaveLootTable(pTag)) {
-      ContainerHelper.saveAllItems(pTag, this.itemStacks, false);
+      ContainerHelper.saveAllItems(pTag, this.itemStacks, false, pRegistries);
     }
   }
 
-  public void loadFromTag(CompoundTag pTag) {
+  public void loadFromTag(CompoundTag pTag, HolderLookup.Provider pLevelRegistry) {
     this.itemStacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-
     if (!this.tryLoadLootTable(pTag) && pTag.contains("Items", 9)) {
-      ContainerHelper.loadAllItems(pTag, this.itemStacks);
+      ContainerHelper.loadAllItems(pTag, this.itemStacks, pLevelRegistry);
     }
   }
 
@@ -234,7 +232,7 @@ public abstract class AbstractIronShulkerBoxBlockEntity extends RandomizableCont
    */
   @Override
   public boolean canPlaceItemThroughFace(int pIndex, ItemStack pItemStack, @Nullable Direction pDirection) {
-    return !(Block.byItem(pItemStack.getItem()) instanceof ShulkerBoxBlock) || !(Block.byItem(pItemStack.getItem()) instanceof AbstractIronShulkerBoxBlock);
+    return (!(Block.byItem(pItemStack.getItem()) instanceof ShulkerBoxBlock) || !(Block.byItem(pItemStack.getItem()) instanceof AbstractIronShulkerBoxBlock)) && pItemStack.getItem().canFitInsideContainerItems();
   }
 
   /**

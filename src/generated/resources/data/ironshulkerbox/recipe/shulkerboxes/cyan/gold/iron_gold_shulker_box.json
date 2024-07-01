@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "ironshulkerbox:cyan_shulker_box",
+  "key": {
+    "M": {
+      "tag": "c:ingots/gold"
+    },
+    "S": {
+      "item": "ironshulkerbox:iron_shulker_box_cyan"
+    }
+  },
+  "pattern": [
+    "MMM",
+    "MSM",
+    "MMM"
+  ],
+  "result": {
+    "count": 1,
+    "id": "ironshulkerbox:gold_shulker_box_cyan"
+  }
+}

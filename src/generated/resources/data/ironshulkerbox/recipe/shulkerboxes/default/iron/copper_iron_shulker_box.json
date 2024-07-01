@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "ironshulkerbox:shulker_box",
+  "key": {
+    "G": {
+      "tag": "c:glass_blocks"
+    },
+    "M": {
+      "tag": "c:ingots/iron"
+    },
+    "S": {
+      "item": "ironshulkerbox:copper_shulker_box"
+    }
+  },
+  "pattern": [
+    "MGM",
+    "GSG",
+    "MGM"
+  ],
+  "result": {
+    "count": 1,
+    "id": "ironshulkerbox:iron_shulker_box"
+  }
+}

@@ -7,6 +7,7 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -27,6 +28,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -40,6 +42,7 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -59,13 +62,14 @@ import java.util.function.Supplier;
 
 public abstract class AbstractIronShulkerBoxBlock extends BaseEntityBlock {
 
+  private static final Component UNKNOWN_CONTENTS = Component.translatable("container.shulkerBox.unknownContents");
   private static final VoxelShape UP_OPEN_AABB = Block.box(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
   private static final VoxelShape DOWN_OPEN_AABB = Block.box(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
   private static final VoxelShape WES_OPEN_AABB = Block.box(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
   private static final VoxelShape EAST_OPEN_AABB = Block.box(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
   private static final VoxelShape NORTH_OPEN_AABB = Block.box(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
   private static final VoxelShape SOUTH_OPEN_AABB = Block.box(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
-  private static final Map<Direction, VoxelShape> OPEN_SHAPE_BY_DIRECTION = Util.make(Maps.newEnumMap(Direction.class), (p_258974_) -> {
+  private static final Map<Direction, VoxelShape> OPEN_SHAPE_BY_DIRECTION = Util.make(Maps.newEnumMap(Direction.class), p_258974_ -> {
     p_258974_.put(Direction.NORTH, NORTH_OPEN_AABB);
     p_258974_.put(Direction.EAST, EAST_OPEN_AABB);
     p_258974_.put(Direction.SOUTH, SOUTH_OPEN_AABB);
@@ -74,7 +78,7 @@ public abstract class AbstractIronShulkerBoxBlock extends BaseEntityBlock {
     p_258974_.put(Direction.DOWN, DOWN_OPEN_AABB);
   });
   public static final EnumProperty<Direction> FACING = DirectionalBlock.FACING;
-  public static final ResourceLocation CONTENTS = new ResourceLocation("contents");
+  public static final ResourceLocation CONTENTS = ResourceLocation.withDefaultNamespace("contents");
 
   private final IronShulkerBoxesTypes type;
   @Nullable
@@ -116,7 +120,7 @@ public abstract class AbstractIronShulkerBoxBlock extends BaseEntityBlock {
 
   @Override
   @Deprecated
-  public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+  protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHitResult) {
     if (pLevel.isClientSide) {
       return InteractionResult.SUCCESS;
     } else if (pPlayer.isSpectator()) {
@@ -142,7 +146,7 @@ public abstract class AbstractIronShulkerBoxBlock extends BaseEntityBlock {
     if (pBlockEntity.getAnimationStatus() != AbstractIronShulkerBoxBlockEntity.AnimationStatus.CLOSED) {
       return true;
     } else {
-      AABB aabb = Shulker.getProgressDeltaAabb(pState.getValue(FACING), 0.0F, 0.5F).move(pPos).deflate(1.0E-6D);
+      AABB aabb = Shulker.getProgressDeltaAabb(1.0F, pState.getValue(FACING), 0.0F, 0.5F).move(pPos).deflate(1.0E-6);
       return pLevel.noCollision(aabb);
     }
   }
@@ -168,12 +172,8 @@ public abstract class AbstractIronShulkerBoxBlock extends BaseEntityBlock {
     if (blockentity instanceof AbstractIronShulkerBoxBlockEntity ironShulkerBoxBlockEntity) {
       if (!pLevel.isClientSide && pPlayer.isCreative() && !ironShulkerBoxBlockEntity.isEmpty()) {
         ItemStack itemstack = getColoredItemStack(this.getColor(), this.getType());
-        blockentity.saveToItem(itemstack);
-        if (ironShulkerBoxBlockEntity.hasCustomName()) {
-          itemstack.setHoverName(ironShulkerBoxBlockEntity.getCustomName());
-        }
-
-        ItemEntity itementity = new ItemEntity(pLevel, (double) pPos.getX() + 0.5D, (double) pPos.getY() + 0.5D, (double) pPos.getZ() + 0.5D, itemstack);
+        itemstack.applyComponents(blockentity.collectComponents());
+        ItemEntity itementity = new ItemEntity(pLevel, (double)pPos.getX() + 0.5, (double)pPos.getY() + 0.5, (double)pPos.getZ() + 0.5, itemstack);
         itementity.setDefaultPickUpDelay();
         pLevel.addFreshEntity(itementity);
       } else {
@@ -186,32 +186,17 @@ public abstract class AbstractIronShulkerBoxBlock extends BaseEntityBlock {
 
   @Override
   @Deprecated
-  public List<ItemStack> getDrops(BlockState pState, LootParams.Builder pBuilder) {
-    BlockEntity blockentity = pBuilder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-
+  public List<ItemStack> getDrops(BlockState pState, LootParams.Builder pParams) {
+    BlockEntity blockentity = pParams.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
     if (blockentity instanceof AbstractIronShulkerBoxBlockEntity ironShulkerBoxBlockEntity) {
-      pBuilder = pBuilder.withDynamicDrop(CONTENTS, (itemStackConsumer) -> {
-        for (int i = 0; i < ironShulkerBoxBlockEntity.getContainerSize(); ++i) {
+      pParams = pParams.withDynamicDrop(CONTENTS, itemStackConsumer -> {
+        for (int i = 0; i < ironShulkerBoxBlockEntity.getContainerSize(); i++) {
           itemStackConsumer.accept(ironShulkerBoxBlockEntity.getItem(i));
         }
       });
     }
 
-    return super.getDrops(pState, pBuilder);
-  }
-
-  /**
-   * Called by BlockItem after this block has been placed.
-   */
-  @Override
-  public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @Nullable LivingEntity pPlacer, ItemStack pStack) {
-    if (pStack.hasCustomHoverName()) {
-      BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-
-      if (blockentity instanceof AbstractIronShulkerBoxBlockEntity) {
-        ((AbstractIronShulkerBoxBlockEntity) blockentity).setCustomName(pStack.getHoverName());
-      }
-    }
+    return super.getDrops(pState, pParams);
   }
 
   @Override
@@ -228,46 +213,32 @@ public abstract class AbstractIronShulkerBoxBlock extends BaseEntityBlock {
   }
 
   @Override
-  public void appendHoverText(ItemStack pStack, @Nullable BlockGetter pLevel, List<Component> pTooltip, TooltipFlag pFlag) {
-    super.appendHoverText(pStack, pLevel, pTooltip, pFlag);
-    CompoundTag compoundtag = BlockItem.getBlockEntityData(pStack);
-    if (compoundtag != null) {
-      if (compoundtag.contains("LootTable", 8)) {
-        pTooltip.add(Component.literal("???????"));
+  public void appendHoverText(ItemStack pStack, Item.TooltipContext pContext, List<Component> pTootipComponents, TooltipFlag pTooltipFlag) {
+    super.appendHoverText(pStack, pContext, pTootipComponents, pTooltipFlag);
+    if (pStack.has(DataComponents.CONTAINER_LOOT)) {
+      pTootipComponents.add(UNKNOWN_CONTENTS);
+    }
+
+    int i = 0;
+    int j = 0;
+
+    for (ItemStack itemstack : pStack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY).nonEmptyItems()) {
+      j++;
+      if (i <= 4) {
+        i++;
+        pTootipComponents.add(Component.translatable("container.shulkerBox.itemCount", itemstack.getHoverName(), itemstack.getCount()));
       }
+    }
 
-      if (compoundtag.contains("Items", 9)) {
-        NonNullList<ItemStack> nonnulllist = NonNullList.withSize(this.type.size, ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(compoundtag, nonnulllist);
-        int i = 0;
-        int j = 0;
-
-        for (ItemStack itemstack : nonnulllist) {
-          if (!itemstack.isEmpty()) {
-            ++j;
-            if (i <= 4) {
-              ++i;
-              MutableComponent mutablecomponent = itemstack.getHoverName().copy();
-              mutablecomponent.append(" x").append(String.valueOf(itemstack.getCount()));
-              pTooltip.add(mutablecomponent);
-            }
-          }
-        }
-
-        if (j - i > 0) {
-          pTooltip.add(Component.translatable("container.shulkerBox.more", j - i).withStyle(ChatFormatting.ITALIC));
-        }
-      }
+    if (j - i > 0) {
+      pTootipComponents.add(Component.translatable("container.shulkerBox.more", j - i).withStyle(ChatFormatting.ITALIC));
     }
   }
 
   @Override
   public VoxelShape getBlockSupportShape(BlockState pState, BlockGetter pReader, BlockPos pPos) {
-    BlockEntity blockentity = pReader.getBlockEntity(pPos);
-    if (blockentity instanceof AbstractIronShulkerBoxBlockEntity ironShulkerBoxBlockEntity) {
-      if (!ironShulkerBoxBlockEntity.isClosed()) {
-        return OPEN_SHAPE_BY_DIRECTION.get(pState.getValue(FACING).getOpposite());
-      }
+    if (pReader.getBlockEntity(pPos) instanceof AbstractIronShulkerBoxBlockEntity ironShulkerBoxBlockEntity && !ironShulkerBoxBlockEntity.isClosed()) {
+      return OPEN_SHAPE_BY_DIRECTION.get(pState.getValue(FACING).getOpposite());
     }
 
     return Shapes.block();
@@ -277,6 +248,11 @@ public abstract class AbstractIronShulkerBoxBlock extends BaseEntityBlock {
   public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
     BlockEntity blockentity = pLevel.getBlockEntity(pPos);
     return blockentity instanceof AbstractIronShulkerBoxBlockEntity ? Shapes.create(((AbstractIronShulkerBoxBlockEntity) blockentity).getBoundingBox(pState)) : Shapes.block();
+  }
+
+  @Override
+  protected boolean propagatesSkylightDown(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
+    return false;
   }
 
   /**
@@ -304,8 +280,7 @@ public abstract class AbstractIronShulkerBoxBlock extends BaseEntityBlock {
   @Override
   public ItemStack getCloneItemStack(LevelReader pLevel, BlockPos pPos, BlockState pState) {
     ItemStack itemstack = super.getCloneItemStack(pLevel, pPos, pState);
-
-    pLevel.getBlockEntity(pPos, this.blockEntityType()).ifPresent(shulkerBoxBlockEntity -> shulkerBoxBlockEntity.saveToItem(itemstack));
+    pLevel.getBlockEntity(pPos, this.blockEntityType()).ifPresent(shulkerBoxBlockEntity -> shulkerBoxBlockEntity.saveToItem(itemstack, pLevel.registryAccess()));
     return itemstack;
   }
 

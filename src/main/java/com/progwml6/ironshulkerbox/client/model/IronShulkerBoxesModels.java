@@ -17,20 +17,20 @@ public class IronShulkerBoxesModels {
   public static final List<ResourceLocation> CRYSTAL_COLORED_SHULKER_TEXTURE_LOCATION = Stream.of("white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black").map((color) -> getShulkerBoxResourceLocation("crystal", color)).collect(ImmutableList.toImmutableList());
   public static final List<ResourceLocation> OBSIDIAN_COLORED_SHULKER_TEXTURE_LOCATION = Stream.of("white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black").map((color) -> getShulkerBoxResourceLocation("obsidian", color)).collect(ImmutableList.toImmutableList());
   public static final List<ResourceLocation> COLORED_SHULKER_TEXTURE_LOCATION = Stream.of("white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black").map(IronShulkerBoxesModels::getShulkerBoxResourceLocation).collect(ImmutableList.toImmutableList());
-  public static final ResourceLocation IRON_SHULKER_TEXTURE_LOCATION = new ResourceLocation(IronShulkerBoxes.MODID, "model/default/shulker_iron");
-  public static final ResourceLocation GOLD_SHULKER_TEXTURE_LOCATION = new ResourceLocation(IronShulkerBoxes.MODID, "model/default/shulker_gold");
-  public static final ResourceLocation DIAMOND_SHULKER_TEXTURE_LOCATION = new ResourceLocation(IronShulkerBoxes.MODID, "model/default/shulker_diamond");
-  public static final ResourceLocation COPPER_SHULKER_TEXTURE_LOCATION = new ResourceLocation(IronShulkerBoxes.MODID, "model/default/shulker_copper");
-  public static final ResourceLocation CRYSTAL_SHULKER_TEXTURE_LOCATION = new ResourceLocation(IronShulkerBoxes.MODID, "model/default/shulker_crystal");
-  public static final ResourceLocation OBSIDIAN_SHULKER_TEXTURE_LOCATION = new ResourceLocation(IronShulkerBoxes.MODID, "model/default/shulker_obsidian");
-  public static final ResourceLocation SHULKER_TEXTURE_LOCATION = new ResourceLocation("entity/shulker/shulker");
+  public static final ResourceLocation IRON_SHULKER_TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(IronShulkerBoxes.MODID, "model/default/shulker_iron");
+  public static final ResourceLocation GOLD_SHULKER_TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(IronShulkerBoxes.MODID, "model/default/shulker_gold");
+  public static final ResourceLocation DIAMOND_SHULKER_TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(IronShulkerBoxes.MODID, "model/default/shulker_diamond");
+  public static final ResourceLocation COPPER_SHULKER_TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(IronShulkerBoxes.MODID, "model/default/shulker_copper");
+  public static final ResourceLocation CRYSTAL_SHULKER_TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(IronShulkerBoxes.MODID, "model/default/shulker_crystal");
+  public static final ResourceLocation OBSIDIAN_SHULKER_TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(IronShulkerBoxes.MODID, "model/default/shulker_obsidian");
+  public static final ResourceLocation SHULKER_TEXTURE_LOCATION = ResourceLocation.withDefaultNamespace("entity/shulker/shulker");
 
   private static ResourceLocation getShulkerBoxResourceLocation(String typeName, String colorName) {
-    return new ResourceLocation(IronShulkerBoxes.MODID, "model/" + colorName + "/shulker_" + colorName + "_" + typeName);
+    return ResourceLocation.fromNamespaceAndPath(IronShulkerBoxes.MODID, "model/" + colorName + "/shulker_" + colorName + "_" + typeName);
   }
 
   private static ResourceLocation getShulkerBoxResourceLocation(String colorName) {
-    return new ResourceLocation("entity/shulker/shulker_" + colorName);
+    return ResourceLocation.withDefaultNamespace("entity/shulker/shulker_" + colorName);
   }
 
   public static ResourceLocation chooseShulkerBoxTexture(IronShulkerBoxesTypes type, int dyeColor) {

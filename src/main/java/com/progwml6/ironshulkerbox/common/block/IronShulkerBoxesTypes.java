@@ -21,13 +21,13 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 
 public enum IronShulkerBoxesTypes implements StringRepresentable {
-  IRON(54, 9, 184, 222, new ResourceLocation("ironshulkerbox", "textures/gui/iron_container.png"), 256, 256),
-  GOLD(81, 9, 184, 276, new ResourceLocation("ironshulkerbox", "textures/gui/gold_container.png"), 256, 276),
-  DIAMOND(108, 12, 238, 276, new ResourceLocation("ironshulkerbox", "textures/gui/diamond_container.png"), 256, 276),
-  COPPER(45, 9, 184, 204, new ResourceLocation("ironshulkerbox", "textures/gui/copper_container.png"), 256, 256),
-  CRYSTAL(108, 12, 238, 276, new ResourceLocation("ironshulkerbox", "textures/gui/diamond_container.png"), 256, 276),
-  OBSIDIAN(108, 12, 238, 276, new ResourceLocation("ironshulkerbox", "textures/gui/diamond_container.png"), 256, 276),
-  VANILLA(0, 0, 0, 0, new ResourceLocation("textures/gui/container/shulker_box.png"), 0, 0);
+  IRON(54, 9, 184, 222, ResourceLocation.fromNamespaceAndPath("ironshulkerbox", "textures/gui/iron_container.png"), 256, 256),
+  GOLD(81, 9, 184, 276, ResourceLocation.fromNamespaceAndPath("ironshulkerbox", "textures/gui/gold_container.png"), 256, 276),
+  DIAMOND(108, 12, 238, 276, ResourceLocation.fromNamespaceAndPath("ironshulkerbox", "textures/gui/diamond_container.png"), 256, 276),
+  COPPER(45, 9, 184, 204, ResourceLocation.fromNamespaceAndPath("ironshulkerbox", "textures/gui/copper_container.png"), 256, 256),
+  CRYSTAL(108, 12, 238, 276, ResourceLocation.fromNamespaceAndPath("ironshulkerbox", "textures/gui/diamond_container.png"), 256, 276),
+  OBSIDIAN(108, 12, 238, 276, ResourceLocation.fromNamespaceAndPath("ironshulkerbox", "textures/gui/diamond_container.png"), 256, 276),
+  VANILLA(0, 0, 0, 0, ResourceLocation.withDefaultNamespace("textures/gui/container/shulker_box.png"), 0, 0);
 
   private final String name;
   public final int size;

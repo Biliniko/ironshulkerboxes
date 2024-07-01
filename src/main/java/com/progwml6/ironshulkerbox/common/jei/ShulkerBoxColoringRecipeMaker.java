@@ -47,7 +47,7 @@ public final class ShulkerBoxColoringRecipeMaker {
 
           NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.EMPTY, baseShulkerIngredient, colorIngredient);
           ItemStack output = AbstractIronShulkerBoxBlock.getColoredItemStack(color, AbstractIronShulkerBoxBlock.getTypeFromItem(baseShulkerStack.getItem()));
-          ResourceLocation id = new ResourceLocation(IronShulkerBoxes.MODID, group + "." + output.getDescriptionId());
+          ResourceLocation id = ResourceLocation.fromNamespaceAndPath(IronShulkerBoxes.MODID, group + "." + output.getDescriptionId());
           CraftingRecipe recipe = new ShapelessRecipe(group, CraftingBookCategory.MISC, output, inputs);
           return new RecipeHolder<>(id, recipe);
         })
@@ -55,30 +55,6 @@ public final class ShulkerBoxColoringRecipeMaker {
     }
 
     return list;
-//
-//    Arrays.stream(IronShulkerBoxesTypes.values()).filter(ironShulkerBoxesTypes -> ironShulkerBoxesTypes != IronShulkerBoxesTypes.VANILLA).map(
-//      type -> {
-//        System.out.println(type);
-//        return null;
-//      }).toList();
-//
-//    return Arrays.stream(DyeColor.values())
-//      .map(color -> {
-//        DyeItem dye = DyeItem.byColor(color);
-//        ItemStack dyeStack = new ItemStack(dye);
-//        TagKey<Item> colorTag = color.getTag();
-//        Ingredient.Value dyeList = new Ingredient.ItemValue(dyeStack);
-//        Ingredient.Value colorList = new Ingredient.TagValue(colorTag);
-//        Stream<Ingredient.Value> colorIngredientStream = Stream.of(dyeList, colorList);
-//        Ingredient colorIngredient = Ingredient.fromValues(colorIngredientStream);
-//
-//        NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.EMPTY, baseShulkerIngredient, colorIngredient);
-//        ItemStack output = AbstractIronShulkerBoxBlock.getColoredItemStack(color, AbstractIronShulkerBoxBlock.getTypeFromItem(baseShulkerStack.getItem()));
-//        ResourceLocation id = new ResourceLocation(IronShulkerBoxes.MOD_ID, group + "." + output.getDescriptionId());
-//        CraftingRecipe recipe = new ShapelessRecipe(group, CraftingBookCategory.MISC, output, inputs);
-//        return new RecipeHolder<>(id, recipe);
-//      })
-//      .toList();
   }
 
   private ShulkerBoxColoringRecipeMaker() {

@@ -21,13 +21,16 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.Material;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -61,25 +64,24 @@ public class IronShulkerBoxRenderer implements BlockEntityRenderer<AbstractIronS
   }
 
   @Override
-  public void render(AbstractIronShulkerBoxBlockEntity tileEntityIn, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLightIn, int combinedOverlayIn) {
+  public void render(AbstractIronShulkerBoxBlockEntity pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, int pPackedOverlay) {
     Direction direction = Direction.UP;
 
-    if (tileEntityIn.hasLevel() && tileEntityIn.getLevel() != null) {
-      BlockState blockstate = tileEntityIn.getLevel().getBlockState(tileEntityIn.getBlockPos());
-
+    if (pBlockEntity.hasLevel() && pBlockEntity.getLevel() != null) {
+      BlockState blockstate = pBlockEntity.getLevel().getBlockState(pBlockEntity.getBlockPos());
       if (blockstate.getBlock() instanceof AbstractIronShulkerBoxBlock) {
         direction = blockstate.getValue(AbstractIronShulkerBoxBlock.FACING);
       }
     }
 
-    Level level = tileEntityIn.getLevel();
+    Level level = pBlockEntity.getLevel();
     boolean useTileEntityBlockState = level != null;
 
-    BlockState blockState = useTileEntityBlockState ? tileEntityIn.getBlockState() : tileEntityIn.getBlockToUse().defaultBlockState().setValue(AbstractIronShulkerBoxBlock.FACING, Direction.UP);
+    BlockState blockState = useTileEntityBlockState ? pBlockEntity.getBlockState() : pBlockEntity.getBlockToUse().defaultBlockState().setValue(AbstractIronShulkerBoxBlock.FACING, Direction.UP);
     Block block = blockState.getBlock();
 
     IronShulkerBoxesTypes boxType = IronShulkerBoxesTypes.IRON;
-    IronShulkerBoxesTypes typeFromTileEntity = tileEntityIn.getShulkerBoxType();
+    IronShulkerBoxesTypes typeFromTileEntity = pBlockEntity.getShulkerBoxType();
     IronShulkerBoxesTypes typeFromBlock = AbstractIronShulkerBoxBlock.getTypeFromBlock(block);
 
     if (typeFromTileEntity != null) {
@@ -92,7 +94,7 @@ public class IronShulkerBoxRenderer implements BlockEntityRenderer<AbstractIronS
       }
     }
 
-    DyeColor dyecolor = tileEntityIn.getColor();
+    DyeColor dyecolor = pBlockEntity.getColor();
     Material material;
 
     if (dyecolor == null) {
@@ -101,24 +103,24 @@ public class IronShulkerBoxRenderer implements BlockEntityRenderer<AbstractIronS
       material = new Material(Sheets.SHULKER_SHEET, IronShulkerBoxesModels.chooseShulkerBoxTexture(boxType, dyecolor.getId()));
     }
 
-    poseStack.pushPose();
-    poseStack.translate(0.5F, 0.5F, 0.5F);
-    poseStack.scale(0.9995F, 0.9995F, 0.9995F);
-    poseStack.mulPose(direction.getRotation());
-    poseStack.scale(1.0F, -1.0F, -1.0F);
-    poseStack.translate(0.0F, -1.0F, 0.0F);
+    pPoseStack.pushPose();
+    pPoseStack.translate(0.5F, 0.5F, 0.5F);
+    pPoseStack.scale(0.9995F, 0.9995F, 0.9995F);
+    pPoseStack.mulPose(direction.getRotation());
+    pPoseStack.scale(1.0F, -1.0F, -1.0F);
+    pPoseStack.translate(0.0F, -1.0F, 0.0F);
     ModelPart modelpart = this.model.getLid();
-    modelpart.setPos(0.0F, 24.0F - tileEntityIn.getProgress(partialTicks) * 0.5F * 16.0F, 0.0F);
-    modelpart.yRot = 270.0F * tileEntityIn.getProgress(partialTicks) * ((float) Math.PI / 180F);
-    VertexConsumer vertexconsumer = material.buffer(bufferSource, RenderType::entityCutoutNoCull);
-    this.model.renderToBuffer(poseStack, vertexconsumer, combinedLightIn, combinedOverlayIn, 1.0F, 1.0F, 1.0F, 1.0F);
-    poseStack.popPose();
+    modelpart.setPos(0.0F, 24.0F - pBlockEntity.getProgress(pPartialTick) * 0.5F * 16.0F, 0.0F);
+    modelpart.yRot = 270.0F * pBlockEntity.getProgress(pPartialTick) * (float) (Math.PI / 180.0);
+    VertexConsumer vertexconsumer = material.buffer(pBuffer, RenderType::entityCutoutNoCull);
+    this.model.renderToBuffer(pPoseStack, vertexconsumer, pPackedLight, pPackedOverlay);
+    pPoseStack.popPose();
 
-    if (boxType.isTransparent() && tileEntityIn instanceof ICrystalShulkerBox crystalShulkerBox && Vec3.atCenterOf(tileEntityIn.getBlockPos()).closerThan(this.renderer.camera.getPosition(), 128d)) {
-      float rotation = (float) (360D * (System.currentTimeMillis() & 0x3FFFL) / 0x3FFFL) - partialTicks;
+    if (boxType.isTransparent() && pBlockEntity instanceof ICrystalShulkerBox crystalShulkerBox && Vec3.atCenterOf(pBlockEntity.getBlockPos()).closerThan(this.renderer.camera.getPosition(), 128d)) {
+      float rotation = (float) (360D * (System.currentTimeMillis() & 0x3FFFL) / 0x3FFFL) - pPartialTick;
 
       for (int j = 0; j < MODEL_ITEMS.size() - 1; j++) {
-        renderItem(poseStack, bufferSource, crystalShulkerBox.getTopItems().get(j), MODEL_ITEMS.get(j), rotation, combinedLightIn);
+        renderItem(pPoseStack, pBuffer, crystalShulkerBox.getTopItems().get(j), MODEL_ITEMS.get(j), rotation, pPackedLight);
       }
     }
   }
@@ -151,5 +153,11 @@ public class IronShulkerBoxRenderer implements BlockEntityRenderer<AbstractIronS
     Minecraft.getInstance().getItemRenderer().renderStatic(item, ItemDisplayContext.NONE, light, OverlayTexture.NO_OVERLAY, matrices, buffer, null, 0);
 
     matrices.popPose();
+  }
+
+  @Override
+  public AABB getRenderBoundingBox(AbstractIronShulkerBoxBlockEntity blockEntity) {
+    BlockPos pos = blockEntity.getBlockPos();
+    return new AABB(pos.getX() - 0.5, pos.getY() - 0.5, pos.getZ() - 0.5, pos.getX() + 1.5, pos.getY() + 1.5, pos.getZ() + 1.5);
   }
 }

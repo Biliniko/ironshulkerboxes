@@ -5,6 +5,7 @@ import com.progwml6.ironshulkerbox.common.item.IronShulkerBoxesUpgradeType;
 import com.progwml6.ironshulkerbox.common.recipes.IronShulkerBoxesColoringRecipe;
 import com.progwml6.ironshulkerbox.common.registraton.IronShulkerBoxesBlocks;
 import com.progwml6.ironshulkerbox.common.registraton.IronShulkerBoxesItems;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
@@ -22,11 +23,12 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.IConditionBuilder;
 
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IConditionBuilder {
 
-  public IronShulkerBoxesRecipeProvider(PackOutput output) {
-    super(output);
+  public IronShulkerBoxesRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> provider) {
+    super(output, provider);
   }
 
   @Override
@@ -90,7 +92,7 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
     ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, IronShulkerBoxesItems.UPGRADES.get(IronShulkerBoxesUpgradeType.COPPER_TO_IRON).get())
       .define('I', Tags.Items.INGOTS_IRON)
       .define('C', Tags.Items.INGOTS_COPPER)
-      .define('G', Tags.Items.GLASS)
+      .define('G', Tags.Items.GLASS_BLOCKS)
       .pattern("IGI")
       .pattern("GCG")
       .pattern("IGI")
@@ -109,29 +111,29 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
     ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, IronShulkerBoxesItems.UPGRADES.get(IronShulkerBoxesUpgradeType.GOLD_TO_DIAMOND).get())
       .define('M', Tags.Items.GEMS_DIAMOND)
       .define('S', Tags.Items.INGOTS_GOLD)
-      .define('G', Tags.Items.GLASS)
+      .define('G', Tags.Items.GLASS_BLOCKS)
       .pattern("GMG")
       .pattern("GSG")
       .pattern("GMG")
-      .unlockedBy("has_glass", has(Tags.Items.GLASS))
+      .unlockedBy("has_glass", has(Tags.Items.GLASS_BLOCKS))
       .save(recipeOutput, prefix(IronShulkerBoxesItems.UPGRADES.get(IronShulkerBoxesUpgradeType.GOLD_TO_DIAMOND).get(), folder));
 
     ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, IronShulkerBoxesItems.UPGRADES.get(IronShulkerBoxesUpgradeType.DIAMOND_TO_OBSIDIAN).get())
       .define('M', Blocks.OBSIDIAN)
-      .define('G', Tags.Items.GLASS)
+      .define('G', Tags.Items.GLASS_BLOCKS)
       .pattern("MGM")
       .pattern("MMM")
       .pattern("MMM")
-      .unlockedBy("has_glass", has(Tags.Items.GLASS))
+      .unlockedBy("has_glass", has(Tags.Items.GLASS_BLOCKS))
       .save(recipeOutput, prefix(IronShulkerBoxesItems.UPGRADES.get(IronShulkerBoxesUpgradeType.DIAMOND_TO_OBSIDIAN).get(), folder));
 
     ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, IronShulkerBoxesItems.UPGRADES.get(IronShulkerBoxesUpgradeType.DIAMOND_TO_CRYSTAL).get())
       .define('S', Blocks.OBSIDIAN)
-      .define('G', Tags.Items.GLASS)
+      .define('G', Tags.Items.GLASS_BLOCKS)
       .pattern("GSG")
       .pattern("GGG")
       .pattern("GGG")
-      .unlockedBy("has_glass", has(Tags.Items.GLASS))
+      .unlockedBy("has_glass", has(Tags.Items.GLASS_BLOCKS))
       .save(recipeOutput, prefix(IronShulkerBoxesItems.UPGRADES.get(IronShulkerBoxesUpgradeType.DIAMOND_TO_CRYSTAL).get(), folder));
   }
 
@@ -143,7 +145,7 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
   }
 
   private static ResourceLocation location(String id) {
-    return new ResourceLocation(IronShulkerBoxes.MODID, id);
+    return ResourceLocation.fromNamespaceAndPath(IronShulkerBoxes.MODID, id);
   }
 
   private void registerCopperBoxRecipe(RecipeOutput recipeOutput, ItemLike result, ItemLike input, String color, String group) {
@@ -161,7 +163,7 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
   private void registerIronBoxRecipe(RecipeOutput recipeOutput, ItemLike result, ItemLike input, ItemLike inputTwo, String color, String group) {
     ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, result)
       .group(group)
-      .define('G', Tags.Items.GLASS)
+      .define('G', Tags.Items.GLASS_BLOCKS)
       .define('S', input)
       .define('M', Tags.Items.INGOTS_IRON)
       .pattern("MGM")
@@ -196,7 +198,7 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
   private void registerDiamondBoxRecipe(RecipeOutput recipeOutput, ItemLike result, ItemLike input, String color, String group) {
     ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, result)
       .group(group)
-      .define('G', Tags.Items.GLASS)
+      .define('G', Tags.Items.GLASS_BLOCKS)
       .define('S', input)
       .define('M', Tags.Items.GEMS_DIAMOND)
       .pattern("GGG")
@@ -209,12 +211,12 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
   private void registerCrystalBoxRecipe(RecipeOutput recipeOutput, ItemLike result, ItemLike input, String color, String group) {
     ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, result)
       .group(group)
-      .define('G', Tags.Items.GLASS)
+      .define('G', Tags.Items.GLASS_BLOCKS)
       .define('S', input)
       .pattern("GGG")
       .pattern("GSG")
       .pattern("GGG")
-      .unlockedBy("has_glass", has(Tags.Items.GLASS))
+      .unlockedBy("has_glass", has(Tags.Items.GLASS_BLOCKS))
       .save(recipeOutput, location("shulkerboxes/" + color + "crystal/diamond_crystal_shulker_box"));
   }
 

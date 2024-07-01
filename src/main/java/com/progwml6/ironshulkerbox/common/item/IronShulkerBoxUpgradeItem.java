@@ -147,9 +147,9 @@ public class IronShulkerBoxUpgradeItem extends Item {
     BlockEntity tileEntity2 = world.getBlockEntity(blockPos);
 
     if (tileEntity2 instanceof AbstractIronShulkerBoxBlockEntity) {
-      if (customName != null) {
-        ((AbstractIronShulkerBoxBlockEntity) tileEntity2).setCustomName(customName);
-      }
+//      if (customName != null) {
+//        ((AbstractIronShulkerBoxBlockEntity) tileEntity2).setCustomName(customName);
+//      }
 
       ((AbstractIronShulkerBoxBlockEntity) tileEntity2).setItems(shulkerBoxContents);
     }
@@ -162,13 +162,13 @@ public class IronShulkerBoxUpgradeItem extends Item {
   }
 
   @Override
-  public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+  public void appendHoverText(ItemStack pStack, Item.TooltipContext pContext, List<Component> pTooltipComponents, TooltipFlag pTooltipFlag) {
     Component SOURCE = Component.translatable("ironshulkerbox." + this.type.source.getEnglishName().toLowerCase()).withStyle(ChatFormatting.BOLD);
     Component TARGET = Component.translatable("ironshulkerbox." + this.type.target.getEnglishName().toLowerCase()).withStyle(ChatFormatting.BOLD);
 
     pTooltipComponents.add(Component.translatable("item.ironshulkerbox.shulker_box_upgrade.upgrade", SOURCE, TARGET).withStyle(ChatFormatting.DARK_RED));
     pTooltipComponents.add(Component.translatable("item.ironshulkerbox.shulker_box_upgrade.color").withStyle(ChatFormatting.GOLD));
 
-    super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
+    super.appendHoverText(pStack, pContext, pTooltipComponents, pTooltipFlag);
   }
 }
