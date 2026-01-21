@@ -173,6 +173,11 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     mavenLocal()
+    mavenCentral()
+    maven {
+        name 'Mojang Libraries'
+        url 'https://libraries.minecraft.net/'
+    }
     maven {
         name 'DVS1 Maven FS'
         url 'https://dvs1.progwml6.com/files/maven'

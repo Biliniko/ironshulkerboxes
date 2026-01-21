@@ -8,7 +8,9 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 import java.util.stream.IntStream;
 
@@ -41,7 +43,8 @@ public class PacketTopStacksSync {
     return new PacketTopStacksSync(blockPos, topItemStacks);
   }
 
-  public static void handle(PacketTopStacksSync msg, CustomPayloadEvent.Context ctx) {
+  public static void handle(PacketTopStacksSync msg, Supplier<NetworkEvent.Context> ctxSupplier) {
+    NetworkEvent.Context ctx = ctxSupplier.get();
     ctx.enqueueWork(() -> {
       ClientLevel level = Minecraft.getInstance().level;
 

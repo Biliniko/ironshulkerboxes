@@ -13,7 +13,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 
 import java.util.ArrayList;
@@ -25,8 +24,8 @@ public final class ShulkerBoxColoringRecipeMaker {
 
   private static final String group = "ironshulkerboxes.shulker.color";
 
-  public static List<RecipeHolder<CraftingRecipe>> createRecipes() {
-    List<RecipeHolder<CraftingRecipe>> list = new ArrayList<>();
+  public static List<CraftingRecipe> createRecipes() {
+    List<CraftingRecipe> list = new ArrayList<>();
 
     for (IronShulkerBoxesTypes type : IronShulkerBoxesTypes.values()) {
       if (type == IronShulkerBoxesTypes.VANILLA)
@@ -48,8 +47,8 @@ public final class ShulkerBoxColoringRecipeMaker {
           NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.EMPTY, baseShulkerIngredient, colorIngredient);
           ItemStack output = AbstractIronShulkerBoxBlock.getColoredItemStack(color, AbstractIronShulkerBoxBlock.getTypeFromItem(baseShulkerStack.getItem()));
           ResourceLocation id = new ResourceLocation(IronShulkerBoxes.MOD_ID, group + "." + output.getDescriptionId());
-          CraftingRecipe recipe = new ShapelessRecipe(group, CraftingBookCategory.MISC, output, inputs);
-          return new RecipeHolder<>(id, recipe);
+          CraftingRecipe recipe = new ShapelessRecipe(id, group, CraftingBookCategory.MISC, output, inputs);
+          return recipe;
         })
         .toList());
     }

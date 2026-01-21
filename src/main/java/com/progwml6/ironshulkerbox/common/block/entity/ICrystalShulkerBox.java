@@ -43,7 +43,7 @@ public interface ICrystalShulkerBox {
     NonNullList<ItemStack> stacks = this.buildItemStackDataList();
 
     if (this.getChestLevel() != null && this.getChestLevel() instanceof ServerLevel && !this.getChestLevel().isClientSide) {
-      IronShulkerBoxesNetwork.INSTANCE.send(new PacketTopStacksSync(this.getChestWorldPosition(), stacks), PacketDistributor.TRACKING_CHUNK.with(this.getChestLevel().getChunkAt(this.getChestWorldPosition())));
+      IronShulkerBoxesNetwork.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> this.getChestLevel().getChunkAt(this.getChestWorldPosition())), new PacketTopStacksSync(this.getChestWorldPosition(), stacks));
     }
   }
 

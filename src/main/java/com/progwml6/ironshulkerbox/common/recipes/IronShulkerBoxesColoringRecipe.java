@@ -3,6 +3,7 @@ package com.progwml6.ironshulkerbox.common.recipes;
 import com.progwml6.ironshulkerbox.common.block.AbstractIronShulkerBoxBlock;
 import com.progwml6.ironshulkerbox.common.registraton.IronShulkerBoxesRecipes;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
@@ -15,8 +16,8 @@ import net.minecraft.world.level.block.Block;
 
 public class IronShulkerBoxesColoringRecipe extends CustomRecipe {
 
-  public IronShulkerBoxesColoringRecipe(CraftingBookCategory pCategory) {
-    super(pCategory);
+  public IronShulkerBoxesColoringRecipe(ResourceLocation id, CraftingBookCategory pCategory) {
+    super(id, pCategory);
   }
 
   /**

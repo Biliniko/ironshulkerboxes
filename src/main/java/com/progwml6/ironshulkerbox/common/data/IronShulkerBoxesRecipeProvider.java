@@ -7,7 +7,7 @@ import com.progwml6.ironshulkerbox.common.registraton.IronShulkerBoxesItems;
 import com.progwml6.ironshulkerbox.common.registraton.IronShulkerBoxesRecipes;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.SpecialRecipeBuilder;
@@ -22,6 +22,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IConditionBuilder {
 
@@ -30,7 +31,7 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
   }
 
   @Override
-  protected void buildRecipes(RecipeOutput recipeOutput) {
+  protected void buildRecipes(Consumer<FinishedRecipe> recipeOutput) {
     this.addDefaultShulkerBoxRecipes(recipeOutput);
     this.addColoredShulkerBoxRecipes(recipeOutput);
 
@@ -39,7 +40,7 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
     SpecialRecipeBuilder.special(IronShulkerBoxesRecipes.SHULKER_BOX_COLORING.get()).save(recipeOutput, location("shulker_box_coloring").toString());
   }
 
-  private void addDefaultShulkerBoxRecipes(RecipeOutput recipeOutput) {
+  private void addDefaultShulkerBoxRecipes(Consumer<FinishedRecipe> recipeOutput) {
     String color = "default/";
     String group = "ironshulkerbox:shulker_box";
 
@@ -51,7 +52,7 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
     this.registerObsidianBoxRecipe(recipeOutput, IronShulkerBoxesBlocks.OBSIDIAN_SHULKER_BOX.get(), IronShulkerBoxesBlocks.DIAMOND_SHULKER_BOX.get(), color, group);
   }
 
-  private void addColoredShulkerBoxRecipes(RecipeOutput recipeOutput) {
+  private void addColoredShulkerBoxRecipes(Consumer<FinishedRecipe> recipeOutput) {
     for (DyeColor color : DyeColor.values()) {
       String colorName = color.name().toLowerCase(Locale.ROOT);
       String folder = colorName + "/";
@@ -66,7 +67,7 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
     }
   }
 
-  private void addUpgradesRecipes(RecipeOutput recipeOutput) {
+  private void addUpgradesRecipes(Consumer<FinishedRecipe> recipeOutput) {
     String folder = "upgrades/";
 
     ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, IronShulkerBoxesItems.UPGRADES.get(IronShulkerBoxesUpgradeType.VANILLA_TO_COPPER).get())
@@ -144,7 +145,7 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
     return new ResourceLocation(IronShulkerBoxes.MOD_ID, id);
   }
 
-  private void registerCopperBoxRecipe(RecipeOutput recipeOutput, ItemLike result, ItemLike input, String color, String group) {
+  private void registerCopperBoxRecipe(Consumer<FinishedRecipe> recipeOutput, ItemLike result, ItemLike input, String color, String group) {
     ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, result)
       .group(group)
       .define('M', Tags.Items.INGOTS_COPPER)
@@ -156,7 +157,7 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
       .save(recipeOutput, location("shulkerboxes/" + color + "copper/vanilla_copper_shulker_box"));
   }
 
-  private void registerIronBoxRecipe(RecipeOutput recipeOutput, ItemLike result, ItemLike input, ItemLike inputTwo, String color, String group) {
+  private void registerIronBoxRecipe(Consumer<FinishedRecipe> recipeOutput, ItemLike result, ItemLike input, ItemLike inputTwo, String color, String group) {
     ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, result)
       .group(group)
       .define('G', Tags.Items.GLASS)
@@ -179,7 +180,7 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
       .save(recipeOutput, location("shulkerboxes/" + color + "iron/vanilla_iron_shulker_box"));
   }
 
-  private void registerGoldBoxRecipe(RecipeOutput recipeOutput, ItemLike result, ItemLike input, String color, String group) {
+  private void registerGoldBoxRecipe(Consumer<FinishedRecipe> recipeOutput, ItemLike result, ItemLike input, String color, String group) {
     ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, result)
       .group(group)
       .define('S', input)
@@ -191,7 +192,7 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
       .save(recipeOutput, location("shulkerboxes/" + color + "gold/iron_gold_shulker_box"));
   }
 
-  private void registerDiamondBoxRecipe(RecipeOutput recipeOutput, ItemLike result, ItemLike input, String color, String group) {
+  private void registerDiamondBoxRecipe(Consumer<FinishedRecipe> recipeOutput, ItemLike result, ItemLike input, String color, String group) {
     ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, result)
       .group(group)
       .define('G', Tags.Items.GLASS)
@@ -204,7 +205,7 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
       .save(recipeOutput, location("shulkerboxes/" + color + "diamond/gold_diamond_shulker_box"));
   }
 
-  private void registerCrystalBoxRecipe(RecipeOutput recipeOutput, ItemLike result, ItemLike input, String color, String group) {
+  private void registerCrystalBoxRecipe(Consumer<FinishedRecipe> recipeOutput, ItemLike result, ItemLike input, String color, String group) {
     ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, result)
       .group(group)
       .define('G', Tags.Items.GLASS)
@@ -216,7 +217,7 @@ public class IronShulkerBoxesRecipeProvider extends RecipeProvider implements IC
       .save(recipeOutput, location("shulkerboxes/" + color + "crystal/diamond_crystal_shulker_box"));
   }
 
-  private void registerObsidianBoxRecipe(RecipeOutput recipeOutput, ItemLike result, ItemLike input, String color, String group) {
+  private void registerObsidianBoxRecipe(Consumer<FinishedRecipe> recipeOutput, ItemLike result, ItemLike input, String color, String group) {
     ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, result)
       .group(group)
       .define('M', Items.OBSIDIAN)
