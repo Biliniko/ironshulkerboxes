@@ -1,5 +1,6 @@
 package com.progwml6.ironshulkerbox.common.item;
 
+import com.progwml6.ironshulkerbox.common.block.AbstractIronShulkerBoxBlock;
 import com.progwml6.ironshulkerbox.common.block.IronShulkerBoxesTypes;
 import com.progwml6.ironshulkerbox.common.registraton.IronShulkerBoxesBlockEntityTypes;
 import net.minecraft.core.Direction;
@@ -36,7 +37,7 @@ public class IronShulkerBoxItemStackInvWrapper implements IItemHandlerModifiable
 
   @Override
   public int getSlots() {
-    return this.type.get().size;
+    return getResolvedType().size;
   }
 
   @Override
@@ -176,7 +177,7 @@ public class IronShulkerBoxItemStackInvWrapper implements IItemHandlerModifiable
     CompoundTag existing = BlockItem.getBlockEntityData(this.stack);
     CompoundTag rootTag = ContainerHelper.saveAllItems(existing == null ? new CompoundTag() : existing, itemStacks);
 
-    switch (this.type.get()) {
+    switch (getResolvedType()) {
       case IRON -> BlockItem.setBlockEntityData(this.stack, IronShulkerBoxesBlockEntityTypes.IRON_SHULKER_BOX.get(), rootTag);
       case GOLD -> BlockItem.setBlockEntityData(this.stack, IronShulkerBoxesBlockEntityTypes.GOLD_SHULKER_BOX.get(), rootTag);
       case DIAMOND -> BlockItem.setBlockEntityData(this.stack, IronShulkerBoxesBlockEntityTypes.DIAMOND_SHULKER_BOX.get(), rootTag);
@@ -192,5 +193,17 @@ public class IronShulkerBoxItemStackInvWrapper implements IItemHandlerModifiable
   @Nonnull
   public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
     return ForgeCapabilities.ITEM_HANDLER.orEmpty(cap, this.holder);
+  }
+
+  @Nonnull
+  private IronShulkerBoxesTypes getResolvedType() {
+    if (this.type != null) {
+      IronShulkerBoxesTypes resolved = this.type.get();
+      if (resolved != null) {
+        return resolved;
+      }
+    }
+
+    return AbstractIronShulkerBoxBlock.getTypeFromItem(this.stack.getItem());
   }
 }

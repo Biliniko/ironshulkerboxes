@@ -18,10 +18,8 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fml.DistExecutor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.Callable;
@@ -36,11 +34,14 @@ public class IronShulkerBoxBlockItem extends BlockItem {
   public IronShulkerBoxBlockItem(Block block, Properties properties, Supplier<Callable<IronShulkerBoxesTypes>> type, Supplier<Callable<DyeColor>> color) {
     super(block, properties);
 
-    IronShulkerBoxesTypes tempType = DistExecutor.unsafeCallWhenOn(Dist.CLIENT, type);
-    DyeColor tempColor = DistExecutor.unsafeCallWhenOn(Dist.CLIENT, color);
+    IronShulkerBoxesTypes tempType = resolveCallable(type);
+    DyeColor tempColor = resolveCallable(color);
 
-    this.type = tempType == null ? null : () -> tempType;
-    this.color = tempColor == null ? null : () -> tempColor;
+    IronShulkerBoxesTypes fallbackType = AbstractIronShulkerBoxBlock.getTypeFromBlock(block);
+    DyeColor fallbackColor = AbstractIronShulkerBoxBlock.getColorFromBlock(block);
+
+    this.type = () -> tempType != null ? tempType : fallbackType;
+    this.color = () -> tempColor != null ? tempColor : fallbackColor;
   }
 
   @Override
@@ -82,5 +83,23 @@ public class IronShulkerBoxBlockItem extends BlockItem {
   @Override
   public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
     return new IronShulkerBoxItemStackInvWrapper(stack, type);
+  }
+
+  @Nullable
+  private static <T> T resolveCallable(@Nullable Supplier<Callable<T>> supplier) {
+    if (supplier == null) {
+      return null;
+    }
+
+    Callable<T> callable = supplier.get();
+    if (callable == null) {
+      return null;
+    }
+
+    try {
+      return callable.call();
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to resolve supplier value", e);
+    }
   }
 }
