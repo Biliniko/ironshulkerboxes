@@ -258,6 +258,8 @@ public abstract class AbstractIronShulkerBoxBlock extends BaseEntityBlock {
         }
       }
     }
+
+    pTooltip.add(Component.translatable("tooltip.ironshulkerbox.preview").withStyle(ChatFormatting.GRAY));
   }
 
   @Override

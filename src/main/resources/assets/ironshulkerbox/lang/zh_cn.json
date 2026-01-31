@@ -134,6 +134,7 @@
     "_comment":"Tooltips",
     "ironshulkerbox.upgrade.tooltip":"升级 %s 潜影盒 > %s 潜影盒.",
     "ironshulkerbox.color.tooltip":"潜影盒颜色会保持不变。",
+    "tooltip.ironshulkerbox.preview":"Alt+左键 预览内容",
 
     "_comment":"Types",
     "ironshulkerbox.iron":"铁",

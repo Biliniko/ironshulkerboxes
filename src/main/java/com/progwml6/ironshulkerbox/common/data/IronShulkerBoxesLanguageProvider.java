@@ -42,6 +42,7 @@ public class IronShulkerBoxesLanguageProvider extends LanguageProvider {
 
     this.add("item.ironshulkerbox.shulker_box_upgrade.upgrade", "Used to upgrade a %s Shulker Box to a %s Shulker Box.");
     this.add("item.ironshulkerbox.shulker_box_upgrade.color", "The color of the Shulker Box will stay the same.");
+    this.add("tooltip.ironshulkerbox.preview", "Alt+Left Click to preview contents");
 
     this.add("ironshulkerbox.iron", "Iron");
     this.add("ironshulkerbox.gold", "Gold");
